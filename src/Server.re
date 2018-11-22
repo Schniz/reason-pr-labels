@@ -28,7 +28,7 @@ let unwrapServerErrors = res =>
   | ServerError(status, message) => Lwt.return((status, message ++ "\n"))
   };
 
-let server = port => {
+let make = (~port) => {
   let callback = (_conn, req, requestBody) => {
     let meth = req |> Request.meth;
     let uri = req |> Request.uri;
@@ -53,12 +53,3 @@ let server = port => {
   };
   Server.create(~mode=`TCP(`Port(port)), Server.make(~callback, ()));
 };
-
-let port =
-  switch (Sys.argv[1]) {
-  | str => int_of_string(str)
-  | exception (Invalid_argument(_)) => 3000
-  };
-Printf.sprintf("Listening on %d. Ctrl-C to quit!", port) |> print_endline;
-
-server(port) |> Lwt_main.run |> ignore;

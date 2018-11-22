@@ -1,4 +1,4 @@
 (executable
- (name Server)
+ (name Index)
  (libraries lwt cohttp cohttp-lwt cohttp-lwt-unix ezjsonm stringext tls)
  (preprocess (pps lwt_ppx)))
