@@ -30,7 +30,7 @@ let pull_request_of_json = json =>
 let json_of_status_post_payload = spp =>
   Ezjsonm.(
     dict([
-      ("state", string(spp.description)),
+      ("state", string_of_status(spp.state) |> string),
       ("description", string(spp.description)),
       ("context", string(spp.context)),
     ])

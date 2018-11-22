@@ -25,7 +25,7 @@ let handlePullRequest = (token, body) => {
   open Models;
   let pr = Ezjsonm.from_string(body) |> pull_request_of_json;
   let statusPayload =
-    switch (List.find(isValidLabel)) {
+    switch (List.find(isValidLabel, pr.labels)) {
     | _ => Models.successPayload
     | exception Not_found => Models.pendingPayload
     };
@@ -45,9 +45,7 @@ let unwrapServerErrors = res =>
 
 let server = port => {
   let callback = (_conn, req, requestBody) => {
-    /* let uri = req |> Request.uri |> Uri.to_string; */
     let meth = req |> Request.meth;
-    /* let headers = req |> Request.headers |> Header.to_string; */
     let uri = req |> Request.uri;
     let path = uri |> Uri.path;
     let q = (errorMessage, name) =>
@@ -56,13 +54,11 @@ let server = port => {
 
     let newBody =
       switch (meth, path) {
-      | (`GET, "/") =>
-        Http.post(~body=generate(), "http://example.com") >|= ok
+      | (`GET, "/") => ok("Server is up") |> Lwt.return
       | (`POST, "/handle_pull_request") =>
         let%lwt token = q("Token is mandatory", "token")
         and body = Cohttp_lwt.Body.to_string(requestBody);
-        let x = handlePullRequest(token, body);
-        x;
+        handlePullRequest(token, body);
       | _ => Lwt.return((`Not_found, "Unknown route."))
       };
 
@@ -76,7 +72,7 @@ let server = port => {
 let port =
   switch (Sys.argv[1]) {
   | str => int_of_string(str)
-  | exception Invalid_argument(_) => 3000
+  | exception (Invalid_argument(_)) => 3000
   };
 Printf.sprintf("Listening on %d. Ctrl-C to quit!", port) |> print_endline;
 
