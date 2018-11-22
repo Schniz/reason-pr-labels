@@ -10,7 +10,7 @@ ADD reason-pr-labels.opam /app/reason-pr-labels.opam
 RUN opam install .
 
 ADD . /app
-RUN mv dune.production dune
+RUN sudo mv src/dune.production src/dune
 RUN eval $(opam env) && sudo dune build src/Index.exe
 
 
