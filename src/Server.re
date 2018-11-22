@@ -1,6 +1,7 @@
 open Lwt;
 open Cohttp_lwt_unix;
 
+exception ServerError(Cohttp.Code.status_code, string);
 let ok = x => (`OK, x);
 
 let lwt_of_option = (exn, opt) =>
@@ -8,12 +9,6 @@ let lwt_of_option = (exn, opt) =>
   | Some(a) => Lwt.return(a)
   | None => Lwt.fail(exn)
   };
-
-exception ServerError(Cohttp.Code.status_code, string);
-
-let startsWith = (substr, str) =>
-  Stringext.find_from(~pattern=substr, str) != None;
-let isValidLabel = startsWith("PR: ");
 
 let handlePullRequest = (token, body) => {
   let%lwt response =
