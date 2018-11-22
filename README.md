@@ -1,4 +1,4 @@
-# [PRs: Look for Labels](https://github.com/Schniz/reason-github-pr-labels-checker)
+# [PRs: Look for Labels](https://github.com/Schniz/reason-pr-labels)
 
 Reason-native server that accepts GitHub PR webhooks and sends statuses to verify correct PR labels
 
