@@ -1,0 +1,14 @@
+opam-version: "2.0"
+name: "project"
+version: "0.1"
+synopsis: "Something good"
+description: """
+Something good
+"""
+maintainer: "Gal Schlezinger <gal@spitfire.co.il>"
+authors: "Gal Schlezinger <gal@spitfire.co.il>"
+license: "MIT"
+homepage: "https://github.com/schniz/reason-pr-labels"
+bug-reports: "https://github.com/schniz/reason-pr-labels/issues"
+dev-repo: "git://github.com/schniz/reason-pr-labels.git"
+depends: [ "ocaml" "ocamlfind" "reason" "dune" "cohttp" "cohttp-lwt" "cohttp-lwt-unix" "ezjsonm" "stringext" "tls" "lwt_ppx" ]
