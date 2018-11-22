@@ -32,7 +32,7 @@ let handlePullRequest = (token, body) => {
   let%lwt response =
     Http.post(
       ~body=Models.json_of_status_post_payload(statusPayload),
-      Printf.sprintf("%s/?access_token=%s", pr.statuses_url, token),
+      Printf.sprintf("%s?access_token=%s", pr.statuses_url, token),
     );
 
   ok(response) |> Lwt.return;
