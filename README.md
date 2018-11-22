@@ -2,6 +2,11 @@
 
 Reason-native server that accepts GitHub PR webhooks and sends statuses to verify correct PR labels
 
+## Under the hood
+
+This project uses [Reason](https://reasonml.github.io) with the native OCaml toolchain to product a statically built binary.
+In [`Dockerfile`](./Dockerfile) you can see that we're using plain `alpine` linux image to run the server, resulting in a small image footprint (~16mb).
+
 ## Deployment on Heroku
 
 Just use Heroku with containers:
