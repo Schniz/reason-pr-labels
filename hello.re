@@ -74,7 +74,7 @@ let server = port => {
 };
 
 let port =
-  switch (Sys.argv[0]) {
+  switch (Sys.argv[1]) {
   | str => int_of_string(str)
   | exception Invalid_argument(_) => 3000
   };
