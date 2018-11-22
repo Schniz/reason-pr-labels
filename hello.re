@@ -73,7 +73,11 @@ let server = port => {
   Server.create(~mode=`TCP(`Port(port)), Server.make(~callback, ()));
 };
 
-let port = 3000;
+let port =
+  switch (Sys.argv[0]) {
+  | str => int_of_string(str)
+  | exception Invalid_argument(_) => 3000
+  };
 Printf.sprintf("Listening on %d. Ctrl-C to quit!", port) |> print_endline;
 
 server(port) |> Lwt_main.run |> ignore;
