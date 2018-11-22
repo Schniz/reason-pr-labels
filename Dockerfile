@@ -11,9 +11,9 @@ RUN opam install .
 
 ADD . /app
 RUN mv dune.production dune
-RUN eval $(opam env) && sudo dune build hello.exe
+RUN eval $(opam env) && sudo dune build Server.exe
 
 
 FROM alpine
-COPY --from=0 /app/_build/default/hello.exe /app
+COPY --from=0 /app/_build/default/Server.exe /app
 CMD /app $PORT
