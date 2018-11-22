@@ -9,12 +9,6 @@ let lwt_of_option = (exn, opt) =>
   | None => Lwt.fail(exn)
   };
 
-let generate = () => {
-  open Models;
-  let values = {state: Pending, description: "Waiting", context: "pr/labels"};
-  json_of_status_post_payload(values);
-};
-
 exception ServerError(Cohttp.Code.status_code, string);
 
 let startsWith = (substr, str) =>
@@ -22,19 +16,10 @@ let startsWith = (substr, str) =>
 let isValidLabel = startsWith("PR: ");
 
 let handlePullRequest = (token, body) => {
-  open Models;
-  let pr = Ezjsonm.from_string(body) |> pull_request_of_json;
-  let statusPayload =
-    switch (List.find(isValidLabel, pr.labels)) {
-    | _ => Models.successPayload
-    | exception Not_found => Models.pendingPayload
-    };
   let%lwt response =
-    Http.post(
-      ~body=Models.json_of_status_post_payload(statusPayload),
-      Printf.sprintf("%s?access_token=%s", pr.statuses_url, token),
-    );
-
+    Ezjsonm.from_string(body)
+    |> PullRequest.of_json
+    |> PullRequest.sendStatus(token);
   ok(response) |> Lwt.return;
 };
 
@@ -52,7 +37,7 @@ let server = port => {
       Uri.get_query_param(uri, name)
       |> lwt_of_option(ServerError(`Bad_request, errorMessage));
 
-    let newBody =
+    let response =
       switch (meth, path) {
       | (`GET, "/") => ok("Server is up") |> Lwt.return
       | (`POST, "/handle_pull_request") =>
@@ -62,7 +47,7 @@ let server = port => {
       | _ => Lwt.return((`Not_found, "Unknown route."))
       };
 
-    newBody
+    response
     |> unwrapServerErrors
     >>= (((status, body)) => Server.respond_string(~status, ~body, ()));
   };
