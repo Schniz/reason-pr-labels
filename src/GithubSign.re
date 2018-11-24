@@ -16,5 +16,5 @@ let makeJwt = key => {
     );
   let m = B64u.urlencode(header) ++ "." ++ B64u.urlencode(payload);
   let signature = rs256_sign(key, m) |> B64u.urlencode;
-  m ++ "." ++ signature;
+  Http.Bearer(m ++ "." ++ signature);
 };

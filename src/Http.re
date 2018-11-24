@@ -21,7 +21,20 @@ let jsonHeaders = (~auth) => {
   add(accept, "authorization", string_of_auth(auth));
 };
 
+let get = (~auth, url) => {
+  print_endline("Making get request to " ++ url);
+  Cohttp_lwt_unix.Client.get(
+    ~headers=jsonHeaders(~auth),
+    Uri.of_string(url),
+  )
+  >>= (
+    ((_response, body)) =>
+      body |> Cohttp_lwt.Body.to_string
+  );
+};
+
 let post = (~body as jsonBody=?, ~auth, url) => {
+  print_endline("Making post request to " ++ url);
   let body =
     (
       switch (jsonBody) {
@@ -37,6 +50,6 @@ let post = (~body as jsonBody=?, ~auth, url) => {
   )
   >>= (
     ((_response, body)) =>
-      body |> Cohttp_lwt.Body.to_string >|= (body => "Hello! " ++ body)
+      body |> Cohttp_lwt.Body.to_string
   );
 };

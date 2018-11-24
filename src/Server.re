@@ -23,23 +23,19 @@ let unwrapServerErrors = res =>
   | ServerError(status, message) => Lwt.return((status, message ++ "\n"))
   };
 
-let make = (~port, ~key as _key) => {
+let make = (~port, ~key) => {
   let callback = (_conn, req, requestBody) => {
     let meth = req |> Request.meth;
     let uri = req |> Request.uri;
     let path = uri |> Uri.path;
-    let q = (errorMessage, name) =>
-      Uri.get_query_param(uri, name)
-      |> lwt_of_option(ServerError(`Bad_request, errorMessage));
 
     let response =
       switch (meth, path) {
       | (`GET, "/")
       | (`GET, "/welcome") => ok("Welcome to the service!") |> Lwt.return
       | (`POST, "/handle_pull_request") =>
-        let%lwt token = q("Token is mandatory", "token")
-        and body = Cohttp_lwt.Body.to_string(requestBody);
-        handlePullRequest(token, body);
+        let%lwt body = Cohttp_lwt.Body.to_string(requestBody);
+        handlePullRequest(key, body);
       | _ => Lwt.return((`Not_found, "Unknown route."))
       };
 
