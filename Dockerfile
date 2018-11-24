@@ -9,9 +9,9 @@ WORKDIR /app
 ADD reason-pr-labels.opam /app/reason-pr-labels.opam
 RUN opam install .
 
-ADD . /app
-RUN sudo mv src/dune.production src/dune
-RUN eval $(opam env) && sudo dune build src/Index.exe
+ADD --chown=opam:nogroup . /app
+RUN mv src/dune.production src/dune
+RUN eval $(opam env) && dune build src/Index.exe
 
 
 FROM alpine
