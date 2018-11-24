@@ -25,6 +25,7 @@ let sendStatus = (token, pr) => {
     };
   Http.post(
     ~body=StatusPayload.to_json(statusPayload),
-    Printf.sprintf("%s?access_token=%s", pr.statuses_url, token),
+    ~auth=Token(token),
+    pr.statuses_url
   );
 };
