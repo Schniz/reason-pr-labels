@@ -11,4 +11,17 @@ license: "MIT"
 homepage: "https://github.com/schniz/reason-pr-labels"
 bug-reports: "https://github.com/schniz/reason-pr-labels/issues"
 dev-repo: "git://github.com/schniz/reason-pr-labels.git"
-depends: [ "ocaml" "ocamlfind" "reason" "dune" "cohttp" "cohttp-lwt" "cohttp-lwt-unix" "ezjsonm" "stringext" "tls" "lwt_ppx" ]
+depends: [
+  "ocaml"
+  "ocamlfind"
+  "nocrypto"
+  "reason"
+  "dune"
+  "cohttp"
+  "cohttp-lwt"
+  "cohttp-lwt-unix"
+  "ezjsonm"
+  "stringext"
+  "tls"
+  "lwt_ppx"
+]

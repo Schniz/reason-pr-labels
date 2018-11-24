@@ -23,7 +23,7 @@ let unwrapServerErrors = res =>
   | ServerError(status, message) => Lwt.return((status, message ++ "\n"))
   };
 
-let make = (~port) => {
+let make = (~port, ~key) => {
   let callback = (_conn, req, requestBody) => {
     let meth = req |> Request.meth;
     let uri = req |> Request.uri;
@@ -34,7 +34,9 @@ let make = (~port) => {
 
     let response =
       switch (meth, path) {
-      | (`GET, "/") => ok("Server is up") |> Lwt.return
+      | (`GET, "/")
+      | (`GET, "/welcome") => ok("Welcome to the service!") |> Lwt.return
+      | (`GET, "/jwt") => GithubSign.makeJwt(key) |> ok |> Lwt.return
       | (`POST, "/handle_pull_request") =>
         let%lwt token = q("Token is mandatory", "token")
         and body = Cohttp_lwt.Body.to_string(requestBody);

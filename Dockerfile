@@ -16,4 +16,5 @@ RUN eval $(opam env) && dune build src/Index.exe
 
 FROM alpine
 COPY --from=0 /app/_build/default/src/Index.exe /app
+COPY --from=0 /app/github.private-key.pem /github.private-key.pem
 CMD /app $PORT
