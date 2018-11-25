@@ -6,6 +6,8 @@ let rs256_sign = (key, data) => {
   Nocrypto.Rsa.PKCS1.sig_encode(~key, pkcs1_digest) |> Cstruct.to_string;
 };
 
+let base64 = B64.encode(~pad=false, ~alphabet=B64.uri_safe_alphabet);
+
 let makeJwt = key => {
   let header = "{ \"alg\": \"RS256\" }";
   let issuedAt = Unix.time() |> int_of_float;
@@ -15,7 +17,7 @@ let makeJwt = key => {
       issuedAt,
       issuedAt + 60 * 10,
     );
-  let m = B64u.urlencode(header) ++ "." ++ B64u.urlencode(payload);
-  let signature = rs256_sign(key, m) |> B64u.urlencode;
+  let m = base64(header) ++ "." ++ base64(payload);
+  let signature = rs256_sign(key, m) |> base64;
   Http.Bearer(m ++ "." ++ signature);
 };
