@@ -1,4 +1,5 @@
 let rs256_sign = (key, data) => {
+  /* Taken from https://github.com/mmaker/ocaml-letsencrypt */
   let data = Cstruct.of_string(data);
   let h = Nocrypto.Hash.SHA256.digest(data);
   let pkcs1_digest = X509.Encoding.pkcs1_digest_info_to_cstruct((`SHA256, h));

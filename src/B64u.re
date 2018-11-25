@@ -1,3 +1,5 @@
+/* Taken from https://github.com/mmaker/ocaml-letsencrypt */
+
 /** string head */
 let head = s => s.[0];
 
