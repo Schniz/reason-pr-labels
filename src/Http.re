@@ -13,13 +13,13 @@ let string_of_auth =
   | Bearer(token) => "Bearer " ++ token
   | Token(token) => "token " ++ token;
 
-let jsonHeaders = (~auth) => {
-  open Cohttp.Header;
-  let json = init_with("Content-Type", "application/json");
-  let accept =
-    add(json, "accept", "application/vnd.github.machine-man-preview+json");
-  add(accept, "authorization", string_of_auth(auth));
-};
+let addHeader = (name, value, headers) =>
+  Cohttp.Header.add(headers, name, value);
+
+let jsonHeaders = (~auth) =>
+  Cohttp.Header.init_with("Content-Type", "application/json")
+  |> addHeader("accept", "application/vnd.github.machine-man-preview+json")
+  |> addHeader("authorization", string_of_auth(auth));
 
 let get = (~auth, url) => {
   print_endline("Making get request to " ++ url);
@@ -27,10 +27,7 @@ let get = (~auth, url) => {
     ~headers=jsonHeaders(~auth),
     Uri.of_string(url),
   )
-  >>= (
-    ((_response, body)) =>
-      body |> Cohttp_lwt.Body.to_string
-  );
+  >>= (((_response, body)) => body |> Cohttp_lwt.Body.to_string);
 };
 
 let post = (~body as jsonBody=?, ~auth, url) => {
@@ -48,8 +45,5 @@ let post = (~body as jsonBody=?, ~auth, url) => {
     ~headers=jsonHeaders(~auth),
     Uri.of_string(url),
   )
-  >>= (
-    ((_response, body)) =>
-      body |> Cohttp_lwt.Body.to_string
-  );
+  >>= (((_response, body)) => body |> Cohttp_lwt.Body.to_string);
 };
