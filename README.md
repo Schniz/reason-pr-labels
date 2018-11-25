@@ -22,6 +22,12 @@ In [`Dockerfile`](./Dockerfile) you can see that we're using plain `alpine` linu
   heroku open
   ```
 
+- Optional: you can set a webhook secret by setting the `GITHUB_WEBHOOK_SECRET` environment variable:
+
+  ```bash
+  heroku config:set GITHUB_WEBHOOK_SECRET this-is-my-wonderful-secret-key
+  ```
+
 ## Usage
 
 - Go to https://github.com/apps/pr-labels-checker and install it on your repo
