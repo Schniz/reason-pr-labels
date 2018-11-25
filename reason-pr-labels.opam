@@ -15,6 +15,7 @@ depends: [
   "ocaml"
   "ocamlfind"
   "nocrypto"
+  "hex"
   "reason"
   "dune"
   "cohttp"

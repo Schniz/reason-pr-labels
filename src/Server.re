@@ -23,18 +23,50 @@ let unwrapServerErrors = res =>
   | ServerError(status, message) => Lwt.return((status, message ++ "\n"))
   };
 
-let make = (~port, ~key) => {
+let calculateHash = (~key, body) =>
+  Printf.sprintf(
+    "sha1=%s",
+    Cstruct.of_string(body)
+    |> Nocrypto.Hash.SHA1.hmac(~key=Cstruct.of_string(key))
+    |> Hex.of_cstruct
+    |> Hex.show
+  );
+
+let verifyBody = (~secret, ~headers, body) =>
+  switch (secret, Cohttp.Header.get(headers, "x-hub-signature")) {
+  | (None, None)
+  | (None, Some(_)) => Lwt.return(body)
+  | (Some(_), None) =>
+    Lwt.fail(
+      ServerError(
+        `Bad_request,
+        "Webhook must calculate signature with secret.",
+      ),
+    )
+  | (Some(secret), Some(signature)) =>
+    let calculatedHash = calculateHash(~key=secret, body);
+    Printf.sprintf("given: %s, calculated: %s", signature, calculatedHash)
+    |> print_endline;
+    calculateHash(~key=secret, body) == signature ?
+      Lwt.return(body) :
+      Lwt.fail(ServerError(`Unauthorized, "Webhook secret didn't match."));
+  };
+
+let make = (~port, ~key, ~webhookSecret) => {
   let callback = (_conn, req, requestBody) => {
     let meth = req |> Request.meth;
     let uri = req |> Request.uri;
     let path = uri |> Uri.path;
+    let headers = req |> Request.headers;
 
     let response =
       switch (meth, path) {
       | (`GET, "/")
       | (`GET, "/welcome") => ok("Welcome to the service!") |> Lwt.return
       | (`POST, "/handle_pull_request") =>
-        let%lwt body = Cohttp_lwt.Body.to_string(requestBody);
+        let%lwt body =
+          Cohttp_lwt.Body.to_string(requestBody)
+          >>= verifyBody(~secret=webhookSecret, ~headers);
         handlePullRequest(key, body);
       | _ => Lwt.return((`Not_found, "Unknown route."))
       };

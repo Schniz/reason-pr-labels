@@ -17,6 +17,16 @@ let `RSA(key) =
   |> Cstruct.of_string
   |> X509.Encoding.Pem.Private_key.of_pem_cstruct1;
 
+let webhookSecret = {
+  let value = Sys.getenv_opt("GITHUB_WEBHOOK_SECRET");
+  if (value == None) {
+    "Warning: You're running the app without a webhook secret.\n"
+    ++ "If you want to use a secret, set the `GITHUB_WEBHOOK_SECRET` environment variable.\n"
+    |> print_endline;
+  };
+  value;
+};
+
 Printf.sprintf("Listening on %d. Ctrl-C to quit!", port) |> print_endline;
 
-Server.make(~port, ~key) |> Lwt_main.run |> ignore;
+Server.make(~port, ~key, ~webhookSecret) |> Lwt_main.run |> ignore;

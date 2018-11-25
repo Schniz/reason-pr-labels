@@ -1,5 +1,5 @@
 (executable
  (name Index)
- (libraries nocrypto lwt cohttp cohttp-lwt cohttp-lwt-unix ezjsonm stringext tls)
+ (libraries hex nocrypto lwt cohttp cohttp-lwt cohttp-lwt-unix ezjsonm stringext tls)
  (flags (-ccopt -static))
  (preprocess (pps lwt_ppx)))
