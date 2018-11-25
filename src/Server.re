@@ -29,7 +29,7 @@ let calculateHash = (~key, body) =>
     Cstruct.of_string(body)
     |> Nocrypto.Hash.SHA1.hmac(~key=Cstruct.of_string(key))
     |> Hex.of_cstruct
-    |> Hex.show
+    |> Hex.show,
   );
 
 let verifyBody = (~secret, ~headers, body) =>
