@@ -17,6 +17,7 @@ In [`Dockerfile`](./Dockerfile) you can see that we're using plain `alpine` linu
   # from the repo root
   heroku login
   heroku create
+  heroku config:set GITHUB_APP_ID <YOUR_GITHUB_APP_ID>
   heroku container:push web
   heroku container:release web
   heroku open
