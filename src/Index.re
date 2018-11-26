@@ -6,19 +6,16 @@ let string_of_file_path = path => {
   s;
 };
 
-let port =
-  switch (Sys.argv[1]) {
-  | str => int_of_string(str)
-  | exception (Invalid_argument(_)) => 3000
-  };
-
 let `RSA(key) =
   string_of_file_path("./github.private-key.pem")
   |> Cstruct.of_string
   |> X509.Encoding.Pem.Private_key.of_pem_cstruct1;
 
+let config = Config.get();
+let port = Config.port(config);
+
 let webhookSecret = {
-  let value = Sys.getenv_opt("GITHUB_WEBHOOK_SECRET");
+  let value = Config.webhookSecret(config);
   if (value == None) {
     "Warning: You're running the app without a webhook secret.\n"
     ++ "If you want to use a secret, set the `GITHUB_WEBHOOK_SECRET` environment variable.\n"
@@ -26,6 +23,7 @@ let webhookSecret = {
   };
   value;
 };
+
 
 Printf.sprintf("Listening on %d. Ctrl-C to quit!", port) |> print_endline;
 

@@ -8,14 +8,17 @@ let rs256_sign = (key, data) => {
 
 let base64 = B64.encode(~pad=false, ~alphabet=B64.uri_safe_alphabet);
 
+let appId = Config.get() |> Config.appId;
+
 let makeJwt = key => {
   let header = "{ \"alg\": \"RS256\" }";
   let issuedAt = Unix.time() |> int_of_float;
   let payload =
     Printf.sprintf(
-      "{ \"iat\": %d, \"exp\": %d, \"iss\": 21259 }",
+      "{ \"iat\": %d, \"exp\": %d, \"iss\": %d }",
       issuedAt,
       issuedAt + 60 * 10,
+      appId,
     );
   let m = base64(header) ++ "." ++ base64(payload);
   let signature = rs256_sign(key, m) |> base64;
